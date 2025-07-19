@@ -1,40 +1,81 @@
 <!doctype html>
 <html>
   <head>
-
-    <!-- some basic stuff  -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SVG with D3</title>
 
-    <!-- 
-      add your stylesheet 
-      base.css loads the templated css that should not be changed
-      you can tweak your own css in custom.css and it will override base.css
-      WARNING: the order of the stylesheets matters
-    -->
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="custom.css">
 
-    <!-- Step 2: add your d3 script below -->
-
+    <!-- D3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
   </head>
+
   <body>
-    <h1>CHART TITLE</h1>
-    <p>DESCRIPTION</p>
+    <h1>"Inheritocracy"</h1>
+    <p><strong>The myth of self-made billionaires</strong></p>
+    <p>
+      Worldwide, Germany seems to have the smallest share of self-made billionaires. Most of them have inherited their wealth. <br>
+      The number of billionaires in Germany has quadrupled since 2007. <br>
+      <small>(Source: Datapulse / Forbes)</small>
+    </p>
+
     <div id="my-svg-chart"></div>
 
-    <!-- your JS code that uses d3 to manipulate data -->
     <script>
+      // Step 3: Data
+      const BillionairesGermany = 171,
+            SelfmadeGermany = 42,
+            InheritedGermany = 129;
 
-      // Step 3. add data variables
-      // Step 4. transform data into usable scales
-      // Step 5. create an SVG container inside #my-svg-chart using d3.select().append()
-      // Step 6. create SVG shapes binded with data, using d3.selectAll().data().join()
-      // Step 7. tweak the attributes of the SVG shapes to position them at the right places
-      // Step 8. color the SVG shapes using style attributes
+      // Step 4: Scale for circle radius
+      const scaleRadius = d3.scaleSqrt()
+        .domain([0, BillionairesGermany])
+        .range([0, 100]);
 
+      // Step 5: Create SVG container
+      const myChart = d3.select('#my-svg-chart')
+        .append('svg')
+        .attr('width', 640)
+        .attr('height', 400);
+
+      // Step 6: Data array for D3
+      const data = [
+        { label: 'Inherited', value: InheritedGermany, color: '#c0392b', cx: 200 },
+        { label: 'Self-made', value: SelfmadeGermany, color: '#999999', cx: 440 }
+      ];
+
+      // Step 7 & 8: Draw circles
+      myChart.selectAll('circle')
+        .data(data)
+        .join('circle')
+        .attr('cx', d => d.cx)
+        .attr('cy', 150)
+        .attr('r', d => scaleRadius(d.value))
+        .attr('fill', d => d.color);
+
+      // Step 9: Add labels
+      myChart.selectAll('text.label')
+        .data(data)
+        .join('text')
+        .attr('class', 'label')
+        .attr('x', d => d.cx)
+        .attr('y', 280)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '16px')
+        .text(d => d.label);
+
+      myChart.selectAll('text.value')
+        .data(data)
+        .join('text')
+        .attr('class', 'value')
+        .attr('x', d => d.cx)
+        .attr('y', 310)
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '14px')
+        .text(d => d.value + ' Billionaires');
     </script>
-
   </body>
 </html>
